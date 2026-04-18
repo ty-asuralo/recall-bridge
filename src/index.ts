@@ -142,8 +142,15 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((err) => {
-  const message = err instanceof Error ? err.message : String(err);
-  console.error(`[recall-bridge] fatal: ${message}`);
-  process.exit(1);
-});
+if (process.argv[2] === 'setup') {
+  import('./setup.js').then(({ runSetup }) => runSetup()).catch((err) => {
+    console.error(`Setup failed: ${err instanceof Error ? err.message : String(err)}`);
+    process.exit(1);
+  });
+} else {
+  main().catch((err) => {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[recall-bridge] fatal: ${message}`);
+    process.exit(1);
+  });
+}

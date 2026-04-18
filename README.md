@@ -9,21 +9,19 @@ The bridge is a small Node binary. Chrome launches it on demand over stdio. It i
 ### Option 1: Homebrew (macOS)
 
 ```bash
-brew tap ty-asuralo/tap
+brew tap ty-asuralo/recall
 brew install recall-bridge
+recall-bridge setup
 ```
-
-This installs the binary, registers the Chrome native messaging host, and prints setup instructions. Run `brew info recall-bridge` to see them again.
 
 ### Option 2: npm (macOS / Linux / Windows)
 
 ```bash
 npm install -g recall-bridge
+recall-bridge setup
 ```
 
-This installs the binary globally and auto-registers the Chrome native messaging host on macOS/Linux. On Windows, run `install\install.ps1` after to register via the registry.
-
-After either method, edit the native host manifest to set your Recall extension ID (find it in `chrome://extensions` with developer mode on).
+The `setup` command walks you through configuration interactively — it asks for your Recall extension ID (from `chrome://extensions`), backend choice, and export folder, then writes the config and registers the Chrome native messaging host.
 
 ### Option 3: From source
 
