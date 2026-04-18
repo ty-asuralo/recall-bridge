@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Chrome doesn't inherit the user's shell PATH — add common binary locations
+for d in "$HOME/.local/bin" "$HOME/.bun/bin" "/opt/homebrew/bin" "/usr/local/bin"; do
+  [[ -d "$d" ]] && export PATH="$d:$PATH"
+done
+# Python user-base bin (e.g. ~/Library/Python/3.12/bin)
+for d in "$HOME"/Library/Python/*/bin; do
+  [[ -d "$d" ]] && export PATH="$d:$PATH"
+done
+exec "/opt/homebrew/bin/node" "/Users/ty/workspace/recall-bridge/dist/index.js" "$@"

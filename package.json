@@ -1,0 +1,39 @@
+{
+  "name": "recall-bridge",
+  "version": "0.1.0",
+  "description": "Chrome native messaging host that connects the Recall extension to local retrieval backends (MemPalace, GBrain)",
+  "type": "module",
+  "bin": {
+    "recall-bridge": "dist/index.js"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.js.map",
+    "install/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "pretest": "tsc",
+    "test": "node --test dist/framing.test.js dist/index.test.js",
+    "prepublishOnly": "npm run build && npm test",
+    "postinstall": "node dist/postinstall.js"
+  },
+  "keywords": ["recall", "chrome-extension", "native-messaging", "mempalace", "memory", "search"],
+  "author": "ty-asuralo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ty-asuralo/recall-bridge"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  }
+}

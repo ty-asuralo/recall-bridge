@@ -1,0 +1,7 @@
+{
+  "name": "com.recall.bridge",
+  "description": "Recall memory bridge",
+  "path": "PLACEHOLDER_BINARY_PATH",
+  "type": "stdio",
+  "allowed_origins": ["chrome-extension://PLACEHOLDER_EXTENSION_ID/"]
+}
