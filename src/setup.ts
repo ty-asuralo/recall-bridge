@@ -2,8 +2,12 @@ import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import readline from 'node:readline';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import type { BridgeConfig } from './config.js';
 import { getConfigDir, saveConfig } from './config.js';
+
+const exec = promisify(execFile);
 
 function ask(rl: readline.Interface, question: string): Promise<string> {
   return new Promise((resolve) => rl.question(question, resolve));
@@ -52,10 +56,18 @@ export async function runSetup(): Promise<void> {
   console.log(`\n  wrote ${path.join(getConfigDir(), 'config.json')}`);
 
   const id = extensionId || 'PLACEHOLDER_EXTENSION_ID';
+
+  let binPath = process.argv[1]!;
+  try {
+    const { stdout } = await exec('which', ['recall-bridge']);
+    const resolved = stdout.trim();
+    if (resolved) binPath = resolved;
+  } catch { /* fall back to process.argv[1] */ }
+
   const manifest = JSON.stringify({
     name: 'com.recall.bridge',
     description: 'Recall memory bridge',
-    path: process.argv[1]!,
+    path: binPath,
     type: 'stdio',
     allowed_origins: [`chrome-extension://${id}/`],
   }, null, 2);
