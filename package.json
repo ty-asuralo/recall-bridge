@@ -1,6 +1,6 @@
 {
   "name": "recall-bridge",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Chrome native messaging host that connects the Recall extension to local retrieval backends (MemPalace, GBrain)",
   "type": "module",
   "bin": {

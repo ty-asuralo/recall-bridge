@@ -2,12 +2,8 @@ import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import readline from 'node:readline';
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
 import type { BridgeConfig } from './config.js';
 import { getConfigDir, saveConfig } from './config.js';
-
-const exec = promisify(execFile);
 
 function ask(rl: readline.Interface, question: string): Promise<string> {
   return new Promise((resolve) => rl.question(question, resolve));
@@ -57,17 +53,29 @@ export async function runSetup(): Promise<void> {
 
   const id = extensionId || 'PLACEHOLDER_EXTENSION_ID';
 
-  let binPath = process.argv[1]!;
-  try {
-    const { stdout } = await exec('which', ['recall-bridge']);
-    const resolved = stdout.trim();
-    if (resolved) binPath = resolved;
-  } catch { /* fall back to process.argv[1] */ }
+  const shimDir = path.join(os.homedir(), '.config', 'recall-bridge');
+  await fs.mkdir(shimDir, { recursive: true });
+  const shimPath = path.join(shimDir, 'recall-bridge');
+  const here = path.dirname(new URL(import.meta.url).pathname);
+  const indexJs = path.join(here, 'index.js');
+  const nodePath = process.execPath;
+  const shim = `#!/usr/bin/env bash
+# Chrome doesn't inherit the user's shell PATH
+for d in "$HOME/.local/bin" "$HOME/.bun/bin" "/opt/homebrew/bin" "/usr/local/bin"; do
+  [[ -d "$d" ]] && export PATH="$d:$PATH"
+done
+for d in "$HOME"/Library/Python/*/bin; do
+  [[ -d "$d" ]] && export PATH="$d:$PATH"
+done
+exec "${nodePath}" "${indexJs}" "$@"
+`;
+  await fs.writeFile(shimPath, shim, { mode: 0o755 });
+  console.log(`\n  wrote shim to ${shimPath}`);
 
   const manifest = JSON.stringify({
     name: 'com.recall.bridge',
     description: 'Recall memory bridge',
-    path: binPath,
+    path: shimPath,
     type: 'stdio',
     allowed_origins: [`chrome-extension://${id}/`],
   }, null, 2);
